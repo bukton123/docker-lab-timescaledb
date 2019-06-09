@@ -1,0 +1,26 @@
+version: "3.6"
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg11
+    # volumes: 
+    #   - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432-5435:5432"
+    environment:
+      - POSTGRES_PASSWORD=P@ssw0rd
+    networks:
+      - timescaledb_cluster
+
+  grafana:
+    image: grafana/grafana
+    container_name: monitor
+    ports: 
+      - 5500:3000
+    networks: 
+      - timescaledb_cluster
+
+networks:
+  timescaledb_cluster:
+    driver: bridge
+    name: timescaledb_cluster
