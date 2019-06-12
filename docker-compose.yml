@@ -12,13 +12,34 @@ services:
     networks:
       - timescaledb_cluster
 
-  grafana:
-    image: grafana/grafana
-    container_name: monitor
-    ports: 
-      - 5500:3000
-    networks: 
+  etcd:
+    image: 'bitnami/etcd:latest'
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    ports:
+      - 2379:2379
+      - 2380:2380
+    networks:
       - timescaledb_cluster
+    volumes:
+      - ./etcd/conf/etcd.conf.yml:/opt/bitnami/etcd/conf/etcd.conf.yml
+
+  haproxy:
+    image: haproxy:1.9.8-alpine
+    volumes: 
+      - ./haproxy:/usr/local/etc/haproxy:ro
+    networks:
+      - timescaledb_cluster
+
+
+  # grafana:
+  #   image: grafana/grafana
+  #   container_name: monitor
+  #   ports: 
+  #     - 5500:3000
+  #   networks: 
+  #     - timescaledb_cluster
 
 networks:
   timescaledb_cluster:
