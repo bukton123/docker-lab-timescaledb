@@ -14,6 +14,7 @@ services:
 
   timescaledb:
     build: ./timescaledb
+    container_name: scale_db
     volumes: 
         - ./timescaledb/conf/patroni.yml:/etc/patroni.yml
     #   - ./data:/var/lib/postgresql/data
@@ -24,9 +25,12 @@ services:
       - 8008:8008
     networks:
       - timescaledb_cluster
+    depends_on: 
+      - etcd
 
   etcd:
     image: 'bitnami/etcd:latest'
+    container_name: scale_etc
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
@@ -38,12 +42,19 @@ services:
     volumes:
       - ./etcd/conf/etcd.conf.yml:/opt/bitnami/etcd/conf/etcd.conf.yml
 
-  # haproxy:
-  #   image: haproxy:1.9.8-alpine
-  #   volumes: 
-  #     - ./haproxy:/usr/local/etc/haproxy:ro
-  #   networks:
-  #     - timescaledb_cluster
+  haproxy:
+    image: haproxy:1.9.8-alpine
+    container_name: scale_haproxy
+    volumes: 
+      - ./haproxy:/usr/local/etc/haproxy:ro
+    ports: 
+      - 7000:7000
+      - 5000:5000
+    networks:
+      - timescaledb_cluster
+    depends_on: 
+      - etcd
+      - timescaledb
 
 
   # grafana:
