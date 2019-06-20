@@ -29,7 +29,6 @@ services:
       - timescaledb_cluster
     depends_on: 
       - etcd
-      - timescaledb
 
   timescaledb3:
     build: ./timescaledb
@@ -43,12 +42,10 @@ services:
       - timescaledb_cluster
     depends_on: 
       - etcd
-      - timescaledb
-      - timescaledb2
 
   etcd:
     image: 'bitnami/etcd:latest'
-    container_name: scale_etc
+    container_name: scale_etcd
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
@@ -70,12 +67,6 @@ services:
       - 5000:5000
     networks:
       - timescaledb_cluster
-    depends_on: 
-      - etcd
-      - timescaledb
-      - timescaledb2
-      - timescaledb3
-
 
   # grafana:
   #   image: grafana/grafana
