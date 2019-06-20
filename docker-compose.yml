@@ -1,14 +1,27 @@
 version: "3.6"
 
 services:
+  # timescaledb:
+  #   # image: timescale/timescaledb:latest-pg11
+  #   # volumes: 
+  #   #   - ./data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432-5435:5432"
+  #   environment:
+  #     - POSTGRES_PASSWORD=P@ssw0rd
+  #   networks:
+  #     - timescaledb_cluster
+
   timescaledb:
-    image: timescale/timescaledb:latest-pg11
-    # volumes: 
+    build: ./timescaledb
+    volumes: 
+        - ./timescaledb/conf/patroni.yml:/etc/patroni.yml
     #   - ./data:/var/lib/postgresql/data
+    environment: 
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - "5432-5435:5432"
-    environment:
-      - POSTGRES_PASSWORD=P@ssw0rd
+      - 5432:5432
+      - 8008:8008
     networks:
       - timescaledb_cluster
 
@@ -25,12 +38,12 @@ services:
     volumes:
       - ./etcd/conf/etcd.conf.yml:/opt/bitnami/etcd/conf/etcd.conf.yml
 
-  haproxy:
-    image: haproxy:1.9.8-alpine
-    volumes: 
-      - ./haproxy:/usr/local/etc/haproxy:ro
-    networks:
-      - timescaledb_cluster
+  # haproxy:
+  #   image: haproxy:1.9.8-alpine
+  #   volumes: 
+  #     - ./haproxy:/usr/local/etc/haproxy:ro
+  #   networks:
+  #     - timescaledb_cluster
 
 
   # grafana:
