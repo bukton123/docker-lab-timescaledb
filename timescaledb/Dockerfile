@@ -18,14 +18,14 @@ RUN pip3 install --upgrade pi
 # install patroni
 RUN pip install patroni
 RUN pip install python-etcd
-
 RUN ln -s /usr/local/bin/pg_* /usr/sbin/
-
 RUN mkdir -p /data/patroni \
   && chown postgres:postgres /data/patroni \
   && chown postgres:postgres /data \
-  && chmod 700 /data/patroni \
-  && echo "host all all 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
+  && chmod 700 /data/patroni
+
+# create host remote poostgres only
+# RUN echo "host all all 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
 
 USER postgres
 
