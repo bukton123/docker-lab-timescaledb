@@ -9,9 +9,6 @@ services:
     #   - ./data:/var/lib/postgresql/data
     environment: 
       - POSTGRES_PASSWORD=postgres
-    # ports:
-    #   - 5432:5432
-    #   - 8008:8008
     networks:
       - timescaledb_cluster
     depends_on: 
@@ -77,6 +74,39 @@ services:
       - timescaledb_cluster
     depends_on: 
       - haproxy
+
+  zabbix:
+    image: zabbix/zabbix-server-pgsql
+    container_name: scale_zabbix
+    ports: 
+      - 10051:10051
+    environment: 
+      - DB_SERVER_HOST=haproxy
+      - DB_SERVER_PORT=5000
+      - POSTGRES_DB=zabbix
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    networks: 
+      - timescaledb_cluster
+    depends_on: 
+      - haproxy
+
+  zabbixweb:
+    image: zabbix/zabbix-web-nginx-pgsql
+    container_name: scale_zabbix_web
+    ports: 
+      - 10080:80
+    environment: 
+      - ZBX_SERVER_HOST=zabbix
+      - DB_SERVER_HOST=haproxy
+      - DB_SERVER_PORT=5000
+      - POSTGRES_DB=zabbix
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    networks: 
+      - timescaledb_cluster
+    depends_on: 
+      - zabbix
 
 networks:
   timescaledb_cluster:
