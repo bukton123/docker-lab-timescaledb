@@ -37,8 +37,8 @@ bootstrap:
                 - createdb
 
 postgresql:
-    listen: 0.0.0.0:5432
-    connect_address: 0.0.0.0:5432
+    listen: scale_db_02:5432
+    connect_address: scale_db_02:5432
     data_dir: /data/patroni
     pgpass: /tmp/pgpass
     authentication:

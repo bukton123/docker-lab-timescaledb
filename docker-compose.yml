@@ -70,13 +70,12 @@ services:
 
   grafana:
     image: grafana/grafana
-    container_name: monitor
+    container_name: scale_monitor
     ports: 
       - 5500:3000
     networks: 
       - timescaledb_cluster
     depends_on: 
-      - etcd
       - haproxy
 
 networks:
