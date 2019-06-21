@@ -1,17 +1,17 @@
 version: "3.6"
 
 services:
-  timescaledb:
+  timescaledb1:
     build: ./timescaledb
-    container_name: scale_db
+    container_name: scale_db_01
     volumes: 
         - ./timescaledb/conf/patroni.yml:/etc/patroni.yml
     #   - ./data:/var/lib/postgresql/data
     environment: 
       - POSTGRES_PASSWORD=postgres
-    ports:
-      - 5432:5432
-      - 8008:8008
+    # ports:
+    #   - 5432:5432
+    #   - 8008:8008
     networks:
       - timescaledb_cluster
     depends_on: 
@@ -68,13 +68,16 @@ services:
     networks:
       - timescaledb_cluster
 
-  # grafana:
-  #   image: grafana/grafana
-  #   container_name: monitor
-  #   ports: 
-  #     - 5500:3000
-  #   networks: 
-  #     - timescaledb_cluster
+  grafana:
+    image: grafana/grafana
+    container_name: monitor
+    ports: 
+      - 5500:3000
+    networks: 
+      - timescaledb_cluster
+    depends_on: 
+      - etcd
+      - haproxy
 
 networks:
   timescaledb_cluster:

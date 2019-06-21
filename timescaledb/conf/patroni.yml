@@ -24,9 +24,9 @@ bootstrap:
 
     pg_hba:
     - host replication replicator 127.0.0.1/32 md5
-    - host replication replicator timescaledb/0 md5
-    - host replication replicator timescaledb2/0 md5
-    - host replication replicator timescaledb3/0 md5
+    - host replication replicator 172.24.0.3/0 md5
+    - host replication replicator 172.24.0.4/0 md5
+    - host replication replicator 172.24.0.5/0 md5
     - host all all 0.0.0.0/0 md5
 
     users:
@@ -37,8 +37,8 @@ bootstrap:
                 - createdb
 
 postgresql:
-    listen: 0.0.0.0:5432
-    connect_address: 0.0.0.0:5432
+    listen: scale_db_01:5432
+    connect_address: scale_db_01:5432
     data_dir: /data/patroni
     pgpass: /tmp/pgpass
     authentication:
