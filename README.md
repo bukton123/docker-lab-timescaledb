@@ -25,7 +25,7 @@ docker-compose up -d zabbixweb
 
 ## Setup Database Zabbix
 ```bash
-sudo -u postgres createuser --pwprompt zabbix
+sudo -u postgres -h localhost -p 5000 createuser --pwprompt zabbix
 
 sudo -u postgres createdb -O zabbix -E Unicode -T template0 zabbix
 
