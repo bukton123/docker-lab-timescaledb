@@ -4,46 +4,47 @@ services:
   timescaledb1:
     build: ./timescaledb
     container_name: scale_db_01
-    volumes: 
+    volumes:
         - ./timescaledb/conf/patroni.yml:/etc/patroni.yml
     #   - ./data:/var/lib/postgresql/data
-    environment: 
+    environment:
       - POSTGRES_PASSWORD=postgres
     networks:
       - timescaledb_cluster
-    depends_on: 
+    depends_on:
       - etcd
-  
+
   timescaledb2:
     build: ./timescaledb
     container_name: scale_db_02
-    volumes: 
+    volumes:
         - ./timescaledb/conf/patroni2.yml:/etc/patroni.yml
     #   - ./data:/var/lib/postgresql/data
-    environment: 
+    environment:
       - POSTGRES_PASSWORD=postgres
     networks:
       - timescaledb_cluster
-    depends_on: 
+    depends_on:
       - etcd
 
   timescaledb3:
     build: ./timescaledb
     container_name: scale_db_03
-    volumes: 
+    volumes:
         - ./timescaledb/conf/patroni3.yml:/etc/patroni.yml
     #   - ./data:/var/lib/postgresql/data
-    environment: 
+    environment:
       - POSTGRES_PASSWORD=postgres
     networks:
       - timescaledb_cluster
-    depends_on: 
+    depends_on:
       - etcd
 
   etcd:
     image: 'bitnami/etcd:latest'
     container_name: scale_etcd
     environment:
+      - ETCD_ENABLE_V2=true
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
     ports:
@@ -57,9 +58,9 @@ services:
   haproxy:
     image: haproxy:1.9.8-alpine
     container_name: scale_haproxy
-    volumes: 
+    volumes:
       - ./haproxy:/usr/local/etc/haproxy:ro
-    ports: 
+    ports:
       - 7000:7000
       - 5000:5000
     networks:
@@ -68,44 +69,44 @@ services:
   grafana:
     image: grafana/grafana
     container_name: scale_monitor
-    ports: 
+    ports:
       - 5500:3000
-    networks: 
+    networks:
       - timescaledb_cluster
-    depends_on: 
+    depends_on:
       - haproxy
 
   zabbix:
     image: zabbix/zabbix-server-pgsql
     container_name: scale_zabbix
-    ports: 
+    ports:
       - 10051:10051
-    environment: 
+    environment:
       - DB_SERVER_HOST=haproxy
       - DB_SERVER_PORT=5000
       - POSTGRES_DB=zabbix
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-    networks: 
+    networks:
       - timescaledb_cluster
-    depends_on: 
+    depends_on:
       - haproxy
 
   zabbixweb:
     image: zabbix/zabbix-web-nginx-pgsql
     container_name: scale_zabbix_web
-    ports: 
-      - 10080:80
-    environment: 
+    ports:
+      - 10080:8080
+    environment:
       - ZBX_SERVER_HOST=zabbix
       - DB_SERVER_HOST=haproxy
       - DB_SERVER_PORT=5000
       - POSTGRES_DB=zabbix
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-    networks: 
+    networks:
       - timescaledb_cluster
-    depends_on: 
+    depends_on:
       - zabbix
 
 networks:
