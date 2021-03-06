@@ -17,6 +17,8 @@ bootstrap:
         maximum_lag_on_failover: 1048576
         postgresql:
             use_pg_rewind: true
+            parameters:
+              shared_preload_libraries: timescaledb
 
     initdb:
     - encoding: UTF8

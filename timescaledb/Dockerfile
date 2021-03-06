@@ -1,4 +1,5 @@
-FROM timescale/timescaledb:latest-pg11
+#FROM timescale/timescaledb:latest-pg11
+FROM timescale/timescaledb-postgis:1.3.1-pg11
 
 LABEL MAINTAINER BukTon
 

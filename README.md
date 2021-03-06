@@ -21,6 +21,9 @@ docker-compose up -d zabbix
 
 docker-compose up -d zabbixweb
 
+# pgadmin for psql gui access
+docker-compose up -d pgadmin
+
 ```
 
 ## Setup Database Zabbix
