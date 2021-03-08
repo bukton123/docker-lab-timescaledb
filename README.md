@@ -26,27 +26,36 @@ docker-compose up -d pgadmin
 
 ```
 
-## Setup Database Zabbix
+## Upgrade to timescalesb
 ```bash
-sudo -u postgres -h localhost -p 5000 createuser --pwprompt zabbix
+PGPORT=5000; export PGPORT
+PGPASSWORD=password; export PGPASSWORD
+PGHOSTADDR=192.168.144.6; export PGHOSTADDR
+PGUSER=postgres; export PGUSER
 
-sudo -u postgres createdb -O zabbix -E Unicode -T template0 zabbix
+createuser --pwprompt zabbix
+createdb -O zabbix -E Unicode -T template0 zabbix
+cd /tmp
 
-mkdir /downloads
+wget https://cdn.zabbix.com/zabbix/sources/stable/5.2/zabbix-5.2.5.tar.gz 
+tar -zxvf zabbix-5.2.5.tar.gz
+cd zabbix-5.2.5/database/postgresql
 
-cd /downloads
+PGUSER=zabbix; export PGUSER
+PGPASSWORD=zabbix; export PGPASSWORD
 
-wget https://ufpr.dl.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/4.2.0/zabbix-4.2.0.tar.gz
+psql zabbix < schema.sql
+psql zabbix < images.sql
+psql zabbix < data.sql
 
-tar -zxvf zabbix-4.2.0.tar.gz
+PGPASSWORD=password psql -U postgres -h 192.168.144.6 --dbname=zabbix -p 5000 -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
+PGPASSWORD=zabbix psql -U zabbix -h 192.168.144.6 -p 5000 -c "\dx"
 
-cd zabbix-4.2.0/database/postgresql
+psql zabbix < timescaledb.sql
 
-sudo -u zabbix psql zabbix < schema.sql
-sudo -u zabbix psql zabbix < images.sql
-sudo -u zabbix psql zabbix < data.sql
 
-echo "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" | sudo -u postgres psql zabbix
+cd ~/docker-lab-timescaledb
+docker-compose up -d zabbix
 
-sudo -u zabbix psql zabbix < timescaledb.sql
+PGPASSWORD=zabbix psql -U zabbix -h 192.168.144.6 -p 5000 -c "\dx timescaledb"
 ```
